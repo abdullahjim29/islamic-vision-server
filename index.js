@@ -32,6 +32,7 @@ async function run() {
 
     const seriesCollection = client.db('moviePortalDB').collection('series');
 
+
     // create/add series to db
     app.post('/series', async (req, res) => {
         const series = req.body;
