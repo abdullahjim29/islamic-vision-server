@@ -30,8 +30,15 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    const seriesCollection = client.db('moviePortalDB').collection('series');
 
-    
+    // create/add series to db
+    app.post('/series', async (req, res) => {
+        const series = req.body;
+        const result = await seriesCollection.insertOne(series);
+        res.send(result);
+    })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
