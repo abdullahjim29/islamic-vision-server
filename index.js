@@ -32,6 +32,12 @@ async function run() {
 
     const seriesCollection = client.db('moviePortalDB').collection('series');
 
+    // get all series
+    app.get('/series', async (req, res) => {
+        const cursor = seriesCollection.find().sort({ratings: -1}).limit(6);
+        const result = await cursor.toArray();
+        res.send(result)
+    })
 
     // create/add series to db
     app.post('/series', async (req, res) => {
