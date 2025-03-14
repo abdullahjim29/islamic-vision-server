@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 const app = express();
 
@@ -34,9 +34,17 @@ async function run() {
 
     // get all series
     app.get('/series', async (req, res) => {
-        const cursor = seriesCollection.find().sort({ratings: -1}).limit(6);
+        const cursor = seriesCollection.find().sort({ratings: -1});
         const result = await cursor.toArray();
         res.send(result)
+    })
+
+    // get specific id
+    app.get('/series/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const result = await seriesCollection.findOne(filter);
+      res.send(result);
     })
 
     // create/add series to db
@@ -45,6 +53,7 @@ async function run() {
         const result = await seriesCollection.insertOne(series);
         res.send(result);
     })
+
 
 
     // Send a ping to confirm a successful connection
