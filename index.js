@@ -10,7 +10,7 @@ app.use(cors());
 
 
 app.get('/', (req, res) => {
-    res.send('islamc vision server is running')
+  res.send('islamc vision server is running')
 })
 
 
@@ -31,38 +31,65 @@ async function run() {
     await client.connect();
 
     const seriesCollection = client.db('moviePortalDB').collection('series');
+    const favoriteCollection = client.db('moviePortalDB').collection('favorite');
 
     // get all series
     app.get('/series', async (req, res) => {
-        const cursor = seriesCollection.find().sort({ratings: -1});
-        const result = await cursor.toArray();
-        res.send(result)
+      const cursor = seriesCollection.find().sort({ ratings: -1 });
+      const result = await cursor.toArray();
+      res.send(result)
     })
 
     // get specific id
     app.get('/series/:id', async (req, res) => {
       const id = req.params.id;
-      const filter = {_id: new ObjectId(id)};
+      const filter = { _id: new ObjectId(id) };
       const result = await seriesCollection.findOne(filter);
       res.send(result);
     })
 
     // create/add series to db
     app.post('/series', async (req, res) => {
-        const series = req.body;
-        const result = await seriesCollection.insertOne(series);
-        res.send(result);
+      const series = req.body;
+      const result = await seriesCollection.insertOne(series);
+      res.send(result);
     })
 
 
     // delete a specific data/id
     app.delete('/series/:id', async (req, res) => {
       const id = req.params.id;
-      const filter = {_id: new ObjectId(id)};
+      const filter = { _id: new ObjectId(id) };
       const result = await seriesCollection.deleteOne(filter);
       res.send(result)
     })
 
+
+    // get favorite 
+    app.get('/favorite', (req, res) => {
+      res.send('favorite')
+    })
+
+    app.put('/favorite/:id', async (req, res) => {
+      const id = req.params.id;
+      const series = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const option = { upsert: true };
+      const updatedSeries = {
+        $set: {
+          postar: series.postar,
+          title: series.title,
+          genre: series.genre,
+          duration: series.duration,
+          release: series.release,
+          ratings: series.ratings,
+          summary: series.summary
+        }
+      }
+
+      const result = await favoriteCollection.updateOne(filter, updatedSeries, option)
+      res.send(result);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
@@ -76,5 +103,6 @@ run().catch(console.dir);
 
 
 app.listen(port, () => {
-    console.log(`this server is running on port: ${port}`);
+  console.log(`this server is running on port: ${port}`);
 })
+
