@@ -65,9 +65,11 @@ async function run() {
     })
 
 
-    // get favorite 
-    app.get('/favorite', (req, res) => {
-      res.send('favorite')
+    // get all favorites
+    app.get('/favorite', async (req, res) => {
+      const cursor = favoriteCollection.find();
+      const result = await cursor.toArray();
+      res.send(result)
     })
 
     app.put('/favorite/:id', async (req, res) => {
