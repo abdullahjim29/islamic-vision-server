@@ -93,6 +93,14 @@ async function run() {
       res.send(result);
     })
 
+    // get specific favorite
+    app.get('/favorite/:id', async(req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const result = await favoriteCollection.findOne(filter);
+      res.send(result)
+    })
+
     // delete favorite
     app.delete('/favorite/:id', async(req, res) => {
       const id = req.params.id;
