@@ -32,6 +32,7 @@ async function run() {
 
     const seriesCollection = client.db('moviePortalDB').collection('series');
     const favoriteCollection = client.db('moviePortalDB').collection('favorite');
+    const userCollection = client.db('moviePortalDB').collection('users');
 
     // get all series
     app.get('/series', async (req, res) => {
@@ -106,6 +107,15 @@ async function run() {
       const id = req.params.id;
       const filter = {_id: new ObjectId(id)};
       const result = await favoriteCollection.deleteOne(filter);
+      res.send(result);
+    })
+
+
+
+    // users related api
+    app.get('/users', async (req, res) => {
+      const cursor = userCollection.find();
+      const result = await cursor.toArray();
       res.send(result);
     })
 
