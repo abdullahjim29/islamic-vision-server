@@ -66,41 +66,42 @@ async function run() {
     })
 
 
+    // update seris api
+    app.patch('/update-series/:id', async(req, res) => {
+      const id = req.params.id;
+      const currentSeries = req.body;
+      const filter = {_id: new ObjectId(id)};
+      const options = {upsert: true};
+      const updatedSeries = {
+        $set:{
+          postar: currentSeries.postar,
+          title: currentSeries.title,
+          genre: currentSeries.genre,
+          duration: currentSeries.duration,
+          release: currentSeries.release,
+          ratings: currentSeries.ratings,
+          summary: currentSeries.summary,
+        }
+      }
+      const result = seriesCollection.updateOne(filter, updatedSeries, options);
+      res.send(result);
+    })
+
     // get all favorites
     app.get('/favorite', async (req, res) => {
       const cursor = favoriteCollection.find();
       const result = await cursor.toArray();
       res.send(result)
+      console.log(result);
     })
 
-    app.put('/favorite/:id', async (req, res) => {
-      const id = req.params.id;
-      const series = req.body;
-      const filter = { _id: new ObjectId(id) };
-      const option = { upsert: true };
-      const updatedSeries = {
-        $set: {
-          postar: series.postar,
-          title: series.title,
-          genre: series.genre,
-          duration: series.duration,
-          release: series.release,
-          ratings: series.ratings,
-          summary: series.summary
-        }
-      }
 
-      const result = await favoriteCollection.updateOne(filter, updatedSeries, option)
+    app.post('/favorite', async(req, res) => {
+      const favoriteSeries = req.body;
+      const result = await favoriteCollection.insertOne(favoriteSeries);
       res.send(result);
     })
 
-    // get specific favorite
-    app.get('/favorite/:id', async(req, res) => {
-      const id = req.params.id;
-      const filter = {_id: new ObjectId(id)};
-      const result = await favoriteCollection.findOne(filter);
-      res.send(result)
-    })
 
     // delete favorite
     app.delete('/favorite/:id', async(req, res) => {
@@ -118,6 +119,16 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     })
+
+
+    // create/add user
+    app.post('/user', async(req, res) => {
+      const user = req.body;
+      const result = await userCollection.insertOne(user);
+      res.send(result); 
+    })
+
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
