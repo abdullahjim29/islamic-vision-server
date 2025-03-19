@@ -36,7 +36,14 @@ async function run() {
 
     // get all series
     app.get('/series', async (req, res) => {
-      const cursor = seriesCollection.find().sort({ ratings: -1 });
+      const {searchParams} = req.query;
+
+      let option = {}
+      
+      if(searchParams){
+        option = {title: {$regex: searchParams, $options: 'i'}}
+      }
+      const cursor = seriesCollection.find(option);
       const result = await cursor.toArray();
       res.send(result)
     })
