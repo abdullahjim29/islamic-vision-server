@@ -96,7 +96,6 @@ async function run() {
       const cursor = favoriteCollection.find();
       const result = await cursor.toArray();
       res.send(result)
-      console.log(result);
     })
 
 
